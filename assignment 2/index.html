@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Storytelling App</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        .story-container {
+            border: 4px solid #ccc;
+            padding: 20px;
+            width: 60%;
+            margin: 20px auto;
+            border-radius: 10px;
+        }
+
+        .btn-container {
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            margin: 5px;
+            cursor: pointer;
+        }
+
+        #result {
+            font-size: 16px;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Want to hear a short story?</h1>
+    <main class="story-container">
+
+        <div class="btn-container">
+            <button class="btn" id="scary-btn">Scary Story</button>
+            <button class="btn" id="funny-btn">Funny Story</button>
+            <button class="btn" id="adventure-btn">Adventure Story</button>
+        </div>
+
+        <p id="result"></p>
+
+    </main>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
