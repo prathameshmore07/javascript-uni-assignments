@@ -1,0 +1,46 @@
+# node modules
+
+node_modules/
+
+# environment variables
+
+.env
+.env.*
+
+# build / dist folders
+
+dist/
+build/
+out/
+
+# logs
+
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# typescript cache
+
+*.tsbuildinfo
+
+# editor files
+
+.vscode/
+.idea/
+
+# mac / system files
+
+.DS_Store
+Thumbs.db
+
+# coverage (tests)
+
+coverage/
+
+# lock files (optional – keep if team project)
+
+# package-lock.json
+
+# yarn.lock
