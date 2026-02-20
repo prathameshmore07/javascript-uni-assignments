@@ -12,9 +12,6 @@ import { z } from "zod";
 const BASE_DIR = "./files";
 fs.ensureDirSync(BASE_DIR);
 
-
-
-// List files
 const listFilesTool = new DynamicStructuredTool({
     name: "list_files",
     description: "List all files in the folder",
@@ -25,7 +22,7 @@ const listFilesTool = new DynamicStructuredTool({
     },
 });
 
-// Read file
+
 const readFileTool = new DynamicStructuredTool({
     name: "read_file",
     description: "Read file content",
@@ -43,7 +40,7 @@ const readFileTool = new DynamicStructuredTool({
     },
 });
 
-// Write file
+
 const writeFileTool = new DynamicStructuredTool({
     name: "write_file",
     description: "Write content to file",
