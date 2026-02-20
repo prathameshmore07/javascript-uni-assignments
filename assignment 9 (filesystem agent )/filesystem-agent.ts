@@ -1,93 +1,55 @@
 import "dotenv/config";
 import fs from "fs-extra";
 import path from "path";
-
 import { ChatOpenAI } from "@langchain/openai";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { DynamicStructuredTool } from "@langchain/core/tools";
-
 import { z } from "zod";
 
-
-const BASE_DIR = "./files";
-fs.ensureDirSync(BASE_DIR);
-
-const listFilesTool = new DynamicStructuredTool({
-    name: "list_files",
-    description: "List all files in the folder",
-    schema: z.object({}),
-    func: async () => {
-        const files = await fs.readdir(BASE_DIR);
-        return files.join(", ") || "No files found";
-    },
-});
+const dir = "./files";
+fs.ensureDirSync(dir);
+const p = (f) => path.join(dir, f);
 
 
-const readFileTool = new DynamicStructuredTool({
-    name: "read_file",
-    description: "Read file content",
-    schema: z.object({
-        filename: z.string(),
+const tools = [
+    new DynamicStructuredTool({
+        name: "list_files",
+        description: "List files",
+        schema: z.object({}),
+        func: async () => (await fs.readdir(dir)).join(", ") || "No files",
     }),
-    func: async ({ filename }) => {
-        const filePath = path.join(BASE_DIR, filename);
-
-        if (!fs.existsSync(filePath)) {
-            return "File not found";
-        }
-
-        return await fs.readFile(filePath, "utf-8");
-    },
-});
-
-
-const writeFileTool = new DynamicStructuredTool({
-    name: "write_file",
-    description: "Write content to file",
-    schema: z.object({
-        filename: z.string(),
-        content: z.string(),
+    new DynamicStructuredTool({
+        name: "read_file",
+        description: "Read file",
+        schema: z.object({ filename: z.string() }),
+        func: async ({ filename }) =>
+            (await fs.pathExists(p(filename)))
+                ? fs.readFile(p(filename), "utf8")
+                : "Not found",
     }),
-    func: async ({ filename, content }) => {
-        const filePath = path.join(BASE_DIR, filename);
-
-        await fs.writeFile(filePath, content);
-        return `File ${filename} created successfully`;
-    },
-});
-
-
-
-const model = new ChatOpenAI({
-    apiKey: process.env.OPENROUTER_API_KEY,
-    model: "google/gemini-2.0-flash-001",
-    temperature: 0,
-    configuration: {
-        baseURL: "https://openrouter.ai/api/v1",
-    },
-});
+    new DynamicStructuredTool({
+        name: "write_file",
+        description: "Write file",
+        schema: z.object({ filename: z.string(), content: z.string() }),
+        func: async ({ filename, content }) => {
+            await fs.writeFile(p(filename), content);
+            return "Done";
+        },
+    }),
+];
 
 
 const agent = createReactAgent({
-    llm: model,
-    tools: [listFilesTool, readFileTool, writeFileTool],
+    llm: new ChatOpenAI({
+        apiKey: process.env.OPENROUTER_API_KEY,
+        model: "google/gemini-2.0-flash-001",
+        configuration: { baseURL: "https://openrouter.ai/api/v1" },
+    }),
+    tools,
 });
 
+const r = await agent.invoke({
+    messages: [{ role: "user", content: "Create hello.txt with Hello World then read it" }],
+});
 
-
-async function run() {
-    const res = await agent.invoke({
-        messages: [
-            {
-                role: "user",
-                content:
-                    "Create file hello.txt with content Hello World then read it",
-            },
-        ],
-    });
-
-    console.log("\n🤖 Agent Response:\n");
-    console.log(res.messages[res.messages.length - 1].content);
-}
-
-run();
+console.log(r.messages[r.messages.length - 1].content);
