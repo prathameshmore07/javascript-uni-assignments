@@ -62,10 +62,13 @@ const writeFileTool = new DynamicStructuredTool({
 
 
 const model = new ChatOpenAI({
-    model: "gpt-4o-mini",
+    apiKey: process.env.OPENROUTER_API_KEY,
+    model: "google/gemini-2.0-flash-001",
     temperature: 0,
+    configuration: {
+        baseURL: "https://openrouter.ai/api/v1",
+    },
 });
-
 
 
 const agent = createReactAgent({
