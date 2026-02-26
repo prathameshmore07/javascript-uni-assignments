@@ -1,15 +1,18 @@
 const newsBox = document.getElementById("newsBox");
-
 const API_KEY = "1f5e1e096d1005875801f9509e57ccb7";
 
-fetch(`https://gnews.io/api/v4/top-headlines?country=in&lang=en&apikey=${API_KEY}`)
-  .then(response => {
+async function loadNews() {
+  try {
+    const response = await fetch(
+      `https://gnews.io/api/v4/top-headlines?country=in&lang=en&apikey=${API_KEY}`
+    );
+
     if (!response.ok) {
       throw new Error("Network response was not ok");
     }
-    return response.json();
-  })
-  .then(data => {
+
+    const data = await response.json();
+
     newsBox.innerHTML = "";
 
     if (!data.articles || data.articles.length === 0) {
@@ -19,7 +22,7 @@ fetch(`https://gnews.io/api/v4/top-headlines?country=in&lang=en&apikey=${API_KEY
 
     data.articles.forEach(article => {
       const card = document.createElement("div");
-      card.className = "news-item";   // 👈 ADDED HERE
+      card.className = "news-item";
 
       card.innerHTML = `
         <div class="news-title">${article.title}</div>
@@ -29,8 +32,11 @@ fetch(`https://gnews.io/api/v4/top-headlines?country=in&lang=en&apikey=${API_KEY
 
       newsBox.appendChild(card);
     });
-  })
-  .catch(error => {
+
+  } catch (error) {
     newsBox.textContent = "Error loading news";
     console.error(error);
-  });
+  }
+}
+
+loadNews();
