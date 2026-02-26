@@ -2,7 +2,7 @@ var button = document.getElementById("btn");
 var result = document.getElementById("result");
 var select = document.getElementById("countries");
 
-button.onclick = function () {
+button.onclick = async function () {
 
   var country = select.value;
 
@@ -41,17 +41,23 @@ button.onclick = function () {
     city = "Japan";
   }
 
-  fetch("https://api.open-meteo.com/v1/forecast?latitude=" + lat + "&longitude=" + lon + "&current_weather=true")
-    .then(function (response) {
-      return response.json();
-    })
-    .then(function (data) {
-      result.innerHTML =
-        "Country: " + city + "<br>" +
-        "Temperature: " + data.current_weather.temperature + " °C<br>" +
-        "Wind Speed: " + data.current_weather.windspeed;
-    })
-    .catch(function () {
-      result.innerHTML = "Error fetching weather";
-    });
+  try {
+    const response = await fetch(
+      "https://api.open-meteo.com/v1/forecast?latitude=" +
+      lat +
+      "&longitude=" +
+      lon +
+      "&current_weather=true"
+    );
+
+    const data = await response.json();
+
+    result.innerHTML =
+      "Country: " + city + "<br>" +
+      "Temperature: " + data.current_weather.temperature + " °C<br>" +
+      "Wind Speed: " + data.current_weather.windspeed;
+
+  } catch (error) {
+    result.innerHTML = "Error fetching weather";
+  }
 };
